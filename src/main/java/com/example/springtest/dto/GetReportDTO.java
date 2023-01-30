@@ -1,16 +1,15 @@
 package com.example.springtest.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-
-import java.time.LocalDate;
+import lombok.*;
 
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Data
+@Setter
+@Getter
 public class GetReportDTO {
     private String username;
     private String changeInPercentage;
-    private LocalDate balanceChangeDate;
+    private String balanceChangeDate;
 }

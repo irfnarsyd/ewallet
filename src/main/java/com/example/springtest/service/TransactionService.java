@@ -4,7 +4,6 @@ import com.example.springtest.constant.Constant;
 import com.example.springtest.dto.CreateTransactionDTO;
 import com.example.springtest.dto.TransactionResponseDTO;
 import com.example.springtest.dto.TransactionTopupDTO;
-//import com.example.springtest.mapper.TransactionMapper;
 import com.example.springtest.mapper.TransactionMapper;
 import com.example.springtest.mapper.TransactionResponseMapper;
 import com.example.springtest.mapper.TransactionTopupMapper;
@@ -12,8 +11,6 @@ import com.example.springtest.model.Transaction;
 import com.example.springtest.model.Users;
 import com.example.springtest.repository.TransactionRepo;
 import com.example.springtest.repository.UsersRepo;
-
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
