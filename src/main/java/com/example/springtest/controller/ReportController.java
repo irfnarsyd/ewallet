@@ -2,7 +2,6 @@ package com.example.springtest.controller;
 
 
 import com.example.springtest.dto.GetReportObjectDTO;
-import com.example.springtest.repository.TransactionRepo;
 import com.example.springtest.service.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,8 +17,6 @@ import java.time.LocalDate;
 @RequestMapping("/report")
 public class ReportController {
 
-    @Autowired
-    TransactionRepo transactionRepo;
     @Autowired
     ReportService service;
 

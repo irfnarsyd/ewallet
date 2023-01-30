@@ -1,6 +1,5 @@
 package com.example.springtest.dto;
 
-import com.example.springtest.constant.Constant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

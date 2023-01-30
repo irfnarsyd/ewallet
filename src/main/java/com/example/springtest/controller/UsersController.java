@@ -19,7 +19,7 @@ public class UsersController {
     public void register(@RequestBody UserRegistrationDTO userRegistrationDTO) {
         if (service.findByUsername(userRegistrationDTO.getUsername()) != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "username is taken");
-        } else if (!service.validatePassword(userRegistrationDTO.getPassword())) {
+        } else if (service.validatePassword(userRegistrationDTO.getPassword())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "format invalid");
         }
         service.create(userRegistrationDTO);
@@ -71,7 +71,7 @@ public class UsersController {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Your new password is still the same as old password");
 
             } else {
-                if (!service.validatePassword(userChangePasswordDTO.getNewPassword())) {
+                if (service.validatePassword(userChangePasswordDTO.getNewPassword())) {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "format invalid");
                 }
                 userChangePasswordDTO.setNewPassword(userChangePasswordDTO.getNewPassword());

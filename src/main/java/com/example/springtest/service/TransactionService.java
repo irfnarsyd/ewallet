@@ -4,7 +4,6 @@ import com.example.springtest.constant.Constant;
 import com.example.springtest.dto.CreateTransactionDTO;
 import com.example.springtest.dto.TransactionResponseDTO;
 import com.example.springtest.dto.TransactionTopupDTO;
-import com.example.springtest.mapper.TransactionMapper;
 import com.example.springtest.mapper.TransactionResponseMapper;
 import com.example.springtest.mapper.TransactionTopupMapper;
 import com.example.springtest.model.Transaction;
@@ -21,24 +20,21 @@ public class TransactionService {
 
 
     @Autowired
-    private TransactionRepo transactionRepo;
+    TransactionRepo transactionRepo;
 
     @Autowired
-    private UsersRepo usersRepo;
+    UsersRepo usersRepo;
 
     @Autowired
-    private TransactionMapper transactionMapper;
+    TransactionTopupMapper transactionTopupMapper;
 
     @Autowired
-    private TransactionTopupMapper transactionTopupMapper;
-
-    @Autowired
-    private TransactionResponseMapper transactionResponseMapper;
+    TransactionResponseMapper transactionResponseMapper;
 
 
     LocalDate localDate = LocalDate.now();
 
-    public TransactionTopupDTO topUp(TransactionTopupDTO transactionTopupDTO){
+    public void topUp(TransactionTopupDTO transactionTopupDTO) {
 
         Users users = usersRepo.findByUsername(transactionTopupDTO.getUsername());
         Transaction transaction = transactionTopupMapper.toEntity(transactionTopupDTO);
@@ -52,44 +48,54 @@ public class TransactionService {
         transaction.setDate(localDate);
         transaction = transactionRepo.save(transaction);
 
-        return transactionTopupMapper.toDto(transaction);
+        transactionTopupMapper.toDto(transaction);
     }
 
-    public TransactionResponseDTO create(CreateTransactionDTO createTransactionDTO){
+    public TransactionResponseDTO create(CreateTransactionDTO createTransactionDTO) {
 
         long tax = Math.round(createTransactionDTO.getAmount() * Constant.TRANSACTION_TAX);
 
         Users senderUsers = usersRepo.findByUsername(createTransactionDTO.getUsername());
         Users recipientUsers = usersRepo.findByUsername(createTransactionDTO.getDestinationUsername());
 
-        Transaction transactionSender = new Transaction();
-        transactionSender.setUsername(createTransactionDTO.getUsername());
-        transactionSender.setAmount(createTransactionDTO.getAmount());
-        transactionSender.setBalanceBefore(senderUsers.getBalance());
-        transactionSender.setBalanceAfter(senderUsers.getBalance() - createTransactionDTO.getAmount() - tax);
-        transactionSender.setStatus("SETTLED");
-        transactionSender.setType(Constant.SENDER);
-        transactionSender.setUsers(senderUsers);
-        transactionSender.setDate(localDate);
+        Transaction transactionSender = null;
+        if (getBalanceAfterTax(createTransactionDTO) > Constant.MIN_BALANCE) {
+            transactionSender = new Transaction();
+            transactionSender.setUsername(createTransactionDTO.getUsername());
+            transactionSender.setAmount(createTransactionDTO.getAmount());
+            transactionSender.setBalanceBefore(senderUsers.getBalance());
+            transactionSender.setBalanceAfter(senderUsers.getBalance() - createTransactionDTO.getAmount() - tax);
+            transactionSender.setStatus("SETTLED");
+            transactionSender.setType(Constant.SENDER);
+            transactionSender.setUsers(senderUsers);
+            transactionSender.setDate(localDate);
 
-        Transaction transactionRecipient = new Transaction();
-        transactionRecipient.setUsername(createTransactionDTO.getDestinationUsername());
-        transactionRecipient.setAmount(createTransactionDTO.getAmount());
-        transactionRecipient.setBalanceBefore(recipientUsers.getBalance());
-        transactionRecipient.setBalanceAfter(recipientUsers.getBalance() + createTransactionDTO.getAmount());
-        transactionRecipient.setStatus("SETTLED");
-        transactionRecipient.setType(Constant.RECIPIENT);
-        transactionRecipient.setUsers(recipientUsers);
-        transactionRecipient.setDate(localDate);
+            Transaction transactionRecipient = new Transaction();
+            transactionRecipient.setUsername(createTransactionDTO.getDestinationUsername());
+            transactionRecipient.setAmount(createTransactionDTO.getAmount());
+            transactionRecipient.setBalanceBefore(recipientUsers.getBalance());
+            transactionRecipient.setBalanceAfter(recipientUsers.getBalance() + createTransactionDTO.getAmount());
+            transactionRecipient.setStatus("SETTLED");
+            transactionRecipient.setType(Constant.RECIPIENT);
+            transactionRecipient.setUsers(recipientUsers);
+            transactionRecipient.setDate(localDate);
 
-        senderUsers.setBalance(senderUsers.getBalance() - createTransactionDTO.getAmount() - tax);
-        recipientUsers.setBalance(recipientUsers.getBalance() + createTransactionDTO.getAmount());
+            senderUsers.setBalance(senderUsers.getBalance() - createTransactionDTO.getAmount() - tax);
+            recipientUsers.setBalance(recipientUsers.getBalance() + createTransactionDTO.getAmount());
 
-        transactionRepo.save(transactionSender);
-        transactionRepo.save(transactionRecipient);
+            transactionRepo.save(transactionSender);
+            transactionRepo.save(transactionRecipient);
+        }
 
         return transactionResponseMapper.toDto(transactionSender);
     }
 
+    public double getBalanceAfterTax(CreateTransactionDTO createTransactionDTO) {
+        Users users = usersRepo.findByUsername(createTransactionDTO.getUsername());
+        long senderBalance = users.getBalance();
+        long senderBalanceAfterTransferOut = senderBalance - createTransactionDTO.getAmount();
+        double taxAmount = createTransactionDTO.getAmount() * Constant.TRANSACTION_TAX;
 
+        return senderBalanceAfterTransferOut - taxAmount;
+    }
 }
