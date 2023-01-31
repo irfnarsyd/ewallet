@@ -1,18 +1,14 @@
 package com.example.springtest.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotBlank;
+import lombok.*;
 
-
-@Data
+@Getter
 @AllArgsConstructor
-@NoArgsConstructor
-@Builder
 public class UserUpdateKtpDTO {
 
+    @NotBlank
     private String username;
-
+    @NotBlank
     private String ktp;
 }

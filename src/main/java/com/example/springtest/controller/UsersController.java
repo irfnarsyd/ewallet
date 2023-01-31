@@ -3,8 +3,10 @@ package com.example.springtest.controller;
 import com.example.springtest.dto.*;
 import com.example.springtest.model.Users;
 import com.example.springtest.service.UsersService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -16,13 +18,17 @@ public class UsersController {
     UsersService service;
 
     @PostMapping("/register")
-    public void register(@RequestBody UserRegistrationDTO userRegistrationDTO) {
-        if (service.findByUsername(userRegistrationDTO.getUsername()) != null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "username is taken");
-        } else if (service.validatePassword(userRegistrationDTO.getPassword())) {
+    public void register(@Valid @RequestBody UserRegistrationDTO userRegistrationDTO, BindingResult result) {
+        if (result.hasErrors()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "format invalid");
+        } else {
+            if (service.findByUsername(userRegistrationDTO.getUsername()) != null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "username is taken");
+            } else if (service.validatePassword(userRegistrationDTO.getPassword())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "password format invalid");
+            }
         }
-        service.create(userRegistrationDTO);
+            service.create(userRegistrationDTO);
     }
 
     @GetMapping("/{username}/getinfo")
@@ -38,13 +44,18 @@ public class UsersController {
     }
 
     @PutMapping("/{username}/addktp")
-    public void updateKtp(@PathVariable String username, @RequestBody UserUpdateKtpDTO userUpdateKtpDTO) {
-        if (service.findByUsername(username) == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "user not found");
-        } else if (service.findByKtp(userUpdateKtpDTO.getKtp()) != null){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ktp has been used by other user");
+    public void updateKtp(@PathVariable String username, @Valid @RequestBody UserUpdateKtpDTO userUpdateKtpDTO, BindingResult result) {
+        if (result.hasErrors()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "format invalid");
+        } else {
+            if (service.findByUsername(username) == null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "user not found");
+            } else if (service.findByKtp(userUpdateKtpDTO.getKtp()) != null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ktp has been used by other user");
+            }
         }
-        service.updateKtp(username, userUpdateKtpDTO );
+            service.updateKtp(username, userUpdateKtpDTO);
+
     }
 
     @GetMapping("/{username}/getbalance")
@@ -61,23 +72,28 @@ public class UsersController {
     }
 
     @PostMapping("/changepassword")
-    public void changePassword(@RequestBody UserChangePasswordDTO userChangePasswordDTO) {
-        if (service.findByUsername(userChangePasswordDTO.getUsername()) == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "user not found");
+    public void changePassword(@Valid @RequestBody UserChangePasswordDTO userChangePasswordDTO, BindingResult result) {
+        if (result.hasErrors()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "format invalid");
         } else {
-            if (!service.getPassword(userChangePasswordDTO.getUsername(), userChangePasswordDTO.getOldPassword())) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Your old password is incorrect");
-            } else if (service.getPassword(userChangePasswordDTO.getUsername(), userChangePasswordDTO.getNewPassword())) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Your new password is still the same as old password");
-
+            if (service.findByUsername(userChangePasswordDTO.getUsername()) == null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "user not found");
             } else {
-                if (service.validatePassword(userChangePasswordDTO.getNewPassword())) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "format invalid");
+                if (!service.getPassword(userChangePasswordDTO.getUsername(), userChangePasswordDTO.getOldPassword())) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Your old password is incorrect");
+                } else if (service.getPassword(userChangePasswordDTO.getUsername(), userChangePasswordDTO.getNewPassword())) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Your new password is still the same as old password");
+                } else {
+                    if (service.validatePassword(userChangePasswordDTO.getNewPassword())) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "new password format invalid");
+                    }
                 }
-                userChangePasswordDTO.setNewPassword(userChangePasswordDTO.getNewPassword());
-                service.updatePassword(userChangePasswordDTO);
             }
         }
+                userChangePasswordDTO.setNewPassword(userChangePasswordDTO.getNewPassword());
+                service.updatePassword(userChangePasswordDTO);
+
+
     }
 
     @PutMapping("{username}/unban")

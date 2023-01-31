@@ -4,6 +4,7 @@ import com.example.springtest.constant.Constant;
 import com.example.springtest.dto.CreateTransactionDTO;
 import com.example.springtest.dto.TransactionResponseDTO;
 import com.example.springtest.dto.TransactionTopupDTO;
+import com.example.springtest.mapper.TransactionMapper;
 import com.example.springtest.mapper.TransactionResponseMapper;
 import com.example.springtest.mapper.TransactionTopupMapper;
 import com.example.springtest.model.Transaction;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class TransactionService {
@@ -31,13 +33,15 @@ public class TransactionService {
     @Autowired
     TransactionResponseMapper transactionResponseMapper;
 
+    @Autowired
+    TransactionMapper transactionMapper;
 
     LocalDate localDate = LocalDate.now();
 
     public void topUp(TransactionTopupDTO transactionTopupDTO) {
 
         Users users = usersRepo.findByUsername(transactionTopupDTO.getUsername());
-        Transaction transaction = transactionTopupMapper.toEntity(transactionTopupDTO);
+        Transaction transaction = new Transaction();
         users.setBalance(users.getBalance() + transactionTopupDTO.getAmount());
         transaction.setUsername(transactionTopupDTO.getUsername());
         transaction.setAmount(transactionTopupDTO.getAmount());
@@ -58,7 +62,8 @@ public class TransactionService {
         Users senderUsers = usersRepo.findByUsername(createTransactionDTO.getUsername());
         Users recipientUsers = usersRepo.findByUsername(createTransactionDTO.getDestinationUsername());
 
-        Transaction transactionSender = null;
+
+        Transaction transactionSender = transactionMapper.toEntity(createTransactionDTO);
         if (getBalanceAfterTax(createTransactionDTO) > Constant.MIN_BALANCE) {
             transactionSender = new Transaction();
             transactionSender.setUsername(createTransactionDTO.getUsername());
@@ -69,6 +74,7 @@ public class TransactionService {
             transactionSender.setType(Constant.SENDER);
             transactionSender.setUsers(senderUsers);
             transactionSender.setDate(localDate);
+
 
             Transaction transactionRecipient = new Transaction();
             transactionRecipient.setUsername(createTransactionDTO.getDestinationUsername());
@@ -83,11 +89,11 @@ public class TransactionService {
             senderUsers.setBalance(senderUsers.getBalance() - createTransactionDTO.getAmount() - tax);
             recipientUsers.setBalance(recipientUsers.getBalance() + createTransactionDTO.getAmount());
 
-            transactionRepo.save(transactionSender);
-            transactionRepo.save(transactionRecipient);
-        }
+            transactionRepo.saveAll(List.of(transactionSender, transactionRecipient));
 
+        }
         return transactionResponseMapper.toDto(transactionSender);
+
     }
 
     public double getBalanceAfterTax(CreateTransactionDTO createTransactionDTO) {

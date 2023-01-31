@@ -2,17 +2,14 @@ package com.example.springtest.dto;
 
 import lombok.*;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Setter
-@Getter
 @Builder
+@Getter
 public class TransactionResponseDTO {
 
     private long trxId;
     private String originUsername;
     private String destinationUsername;
-    private long amount;
+    private Long amount;
     private String status;
+
 }

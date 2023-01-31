@@ -1,21 +1,24 @@
 package com.example.springtest.dto;
 
-
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-@Data
 @AllArgsConstructor
-@NoArgsConstructor
-@Setter
 @Getter
-@Builder
     public class CreateTransactionDTO {
 
         private long id;
+
+        @NotBlank
         private String username;
+        @NotBlank
         private String password;
+        @NotBlank
         private String destinationUsername;
-        private long amount;
+        @NotNull
+        private Long amount;
+
         private String status;
 
     }
