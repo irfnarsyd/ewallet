@@ -7,8 +7,8 @@ import lombok.*;
 @AllArgsConstructor
 public class UserUpdateKtpDTO {
 
-    @NotBlank
     private String username;
+
     @NotBlank
     private String ktp;
 }

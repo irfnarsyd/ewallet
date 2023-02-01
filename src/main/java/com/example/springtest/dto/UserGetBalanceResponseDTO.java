@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class UserGetBalanceResponseDTO {
-    private long balance;
-    private long transactionLimit;
+    private String balance;
+    private String transactionLimit;
 }

@@ -10,6 +10,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.text.NumberFormat;
+
 @RestController
 @RequestMapping("/users")
 public class UsersController {
@@ -47,7 +49,7 @@ public class UsersController {
     public void updateKtp(@PathVariable String username, @Valid @RequestBody UserUpdateKtpDTO userUpdateKtpDTO, BindingResult result) {
         if (result.hasErrors()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "format invalid");
-        } else {
+        }else {
             if (service.findByUsername(username) == null) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "user not found");
             } else if (service.findByKtp(userUpdateKtpDTO.getKtp()) != null) {
@@ -55,7 +57,6 @@ public class UsersController {
             }
         }
             service.updateKtp(username, userUpdateKtpDTO);
-
     }
 
     @GetMapping("/{username}/getbalance")
@@ -64,10 +65,11 @@ public class UsersController {
         if (users == null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "user not found");
         }
+        NumberFormat nf = NumberFormat.getNumberInstance();
 
         return UserGetBalanceResponseDTO.builder()
-                .balance(users.getBalance())
-                .transactionLimit(users.getTransactionLimit())
+                .balance(nf.format(users.getBalance()))
+                .transactionLimit(nf.format(users.getTransactionLimit()))
                 .build();
     }
 
@@ -92,8 +94,6 @@ public class UsersController {
         }
                 userChangePasswordDTO.setNewPassword(userChangePasswordDTO.getNewPassword());
                 service.updatePassword(userChangePasswordDTO);
-
-
     }
 
     @PutMapping("{username}/unban")
