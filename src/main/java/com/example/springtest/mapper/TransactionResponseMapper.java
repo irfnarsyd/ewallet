@@ -1,7 +1,5 @@
 package com.example.springtest.mapper;
 
-import com.example.springtest.dto.CreateTransactionDTO;
-import com.example.springtest.dto.TransactionDTO;
 import com.example.springtest.dto.TransactionResponseDTO;
 import com.example.springtest.model.Transaction;
 import org.mapstruct.Mapper;

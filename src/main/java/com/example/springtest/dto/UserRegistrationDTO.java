@@ -1,16 +1,15 @@
 package com.example.springtest.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotBlank;
+import lombok.*;
 
-@Data
 @AllArgsConstructor
-@NoArgsConstructor
-@Builder
+@Getter
 public class UserRegistrationDTO {
     private long id;
+
+    @NotBlank
     private String username;
+    @NotBlank
     private String password;
 }

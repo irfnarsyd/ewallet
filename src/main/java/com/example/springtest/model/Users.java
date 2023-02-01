@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Entity
@@ -31,6 +33,9 @@ import lombok.Setter;
         private long balance ;
         @Column(name = "transaction_limit")
         private Long transactionLimit = Constant.MAX_TRANSACTION_AMOUNT;
+
+        @OneToMany(mappedBy = "users")
+        private List<Transaction> transactions;
         @Column(name = "password_retry_counter")
         private int passwordRetry ;
     }
