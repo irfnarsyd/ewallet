@@ -38,6 +38,10 @@ public class TransactionController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "max topup exceeded");
         } else if (usersService.getBalance(transactionTopupDTO.getUsername()) + transactionTopupDTO.getAmount() > Constant.MAX_BALANCE) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "max balance exceeded");
+        } else if (transactionTopupDTO.getAmount() < 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "topup cannot be minus '-' ");
+        } else if (transactionTopupDTO.getAmount() < Constant.MIN_TRANSACTION_AMOUNT) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "minimum trx amount is " + Constant.MIN_TRANSACTION_AMOUNT);
         }
         service.topUp(transactionTopupDTO);
     }
@@ -55,6 +59,8 @@ public class TransactionController {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "user is banned");
             } else if (usersService.findByUsername(createTransactionDTO.getDestinationUsername()) == null) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "destination user not found");
+            } else if (usersService.findByUsername(createTransactionDTO.getUsername()) == usersService.findByUsername(createTransactionDTO.getDestinationUsername())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "destination user cannot be the same as the origin user");
             } else if (usersService.getPasswordCounter(createTransactionDTO.getUsername(), createTransactionDTO.getPassword())) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "password invalid");
             } else if (createTransactionDTO.getAmount() > usersService.getTransactionLimit(createTransactionDTO.getUsername())) {

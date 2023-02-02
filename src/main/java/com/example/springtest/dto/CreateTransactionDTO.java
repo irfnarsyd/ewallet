@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @AllArgsConstructor
-@Getter
+@Data
     public class CreateTransactionDTO {
 
         private long id;
