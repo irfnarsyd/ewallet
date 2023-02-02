@@ -2,7 +2,6 @@ package com.example.springtest.model;
 
 import com.example.springtest.constant.Constant;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,7 +24,6 @@ import java.util.List;
 
         private String password;
         @Column(name = "no_ktp")
-        @Size(min = 16)
         private String ktp;
 
         private boolean banStatus;

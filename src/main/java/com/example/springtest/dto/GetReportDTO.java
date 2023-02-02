@@ -5,7 +5,6 @@ import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 @Setter
 @Getter
 public class GetReportDTO {

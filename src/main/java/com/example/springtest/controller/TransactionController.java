@@ -38,6 +38,10 @@ public class TransactionController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "max topup exceeded");
         } else if (usersService.getBalance(transactionTopupDTO.getUsername()) + transactionTopupDTO.getAmount() > Constant.MAX_BALANCE) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "max balance exceeded");
+        } else if (transactionTopupDTO.getAmount() < 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "topup cannot be minus '-' ");
+        } else if (transactionTopupDTO.getAmount() < Constant.MIN_TRANSACTION_AMOUNT) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "minimum trx amount is " + Constant.MIN_TRANSACTION_AMOUNT);
         }
         service.topUp(transactionTopupDTO);
     }
