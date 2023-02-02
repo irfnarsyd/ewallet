@@ -37,7 +37,7 @@ public class UsersService {
     }
 
     public boolean validateKtpSize(String ktp){
-        String pattern = "^\\d{16}$";
+        String pattern = "^\\d{16,}$";
         return ktp.matches(pattern);
     }
 
