@@ -33,7 +33,7 @@ public class UsersService {
 
     public boolean validatePassword(String password){
         String pattern = "(?=.*[0-9])(?=.*[a-z])(?=.*[@#$%^&+=]).{10,}";
-        return password.matches(pattern);
+        return !password.matches(pattern);
     }
 
     public boolean validateKtpSize(String ktp){

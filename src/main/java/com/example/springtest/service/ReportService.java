@@ -25,7 +25,7 @@ public class ReportService {
 
         data.forEach(users -> {
             List<Transaction> transactions = users.getTransactions().stream().filter(transaction -> transaction.getDate().equals(date)).toList();
-            String changeInPercentage = "";
+            String changeInPercentage;
 
             if(!transactions.isEmpty()){
                 long firstBalance = transactions.get(0).getBalanceBefore();

@@ -26,7 +26,7 @@ public class UsersController {
         } else {
             if (service.findByUsername(userRegistrationDTO.getUsername()) != null) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "username is taken");
-            } else if (!service.validatePassword(userRegistrationDTO.getPassword())) {
+            } else if (service.validatePassword(userRegistrationDTO.getPassword())) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "password format invalid");
             }
         }
@@ -87,7 +87,7 @@ public class UsersController {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Your old password is incorrect");
                 } else if (service.getPassword(userChangePasswordDTO.getUsername(), userChangePasswordDTO.getNewPassword())) {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Your new password is still the same as old password");
-                } else if (!service.validatePassword(userChangePasswordDTO.getNewPassword())) {
+                } else if (service.validatePassword(userChangePasswordDTO.getNewPassword())) {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "new password format invalid");
                 }
             }
