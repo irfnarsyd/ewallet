@@ -22,18 +22,17 @@ public class Transaction extends AbstractAuditingEntity{
     @JsonIgnore
     @JoinColumn(name = "users_id")
     private Users users;
-    @Column(name = "username")
+
     private String username;
-    @Column(name = "amount")
+
     private long amount;
-    @Column(name = "status")
+
     private String status;
-    @Column(name = "date")
     private LocalDate date;
-    @Column(name = "balanceAfter")
+
     private long balanceAfter;
-    @Column(name = "balanceBefore")
+
     private long balanceBefore;
-    @Column(name = "type")
+
     private String type;
 }

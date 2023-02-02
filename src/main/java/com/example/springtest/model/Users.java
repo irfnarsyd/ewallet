@@ -2,6 +2,7 @@ package com.example.springtest.model;
 
 import com.example.springtest.constant.Constant;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,22 +23,20 @@ import java.util.List;
         @Column(name = "username", unique = true)
         private String username;
 
-        @Column(name = "password")
-
         private String password;
         @Column(name = "no_ktp")
+        @Size(min = 16)
         private String ktp;
-        @Column(name = "banStatus")
+
         private boolean banStatus;
-        @Column(name = "balance")
+
         private long balance ;
-        @Column(name = "transaction_limit")
         private Long transactionLimit = Constant.MAX_TRANSACTION_AMOUNT;
+        @Column(name = "password_retry_counter")
+        private int passwordRetry ;
 
         @OneToMany(mappedBy = "users")
         private List<Transaction> transactions;
-        @Column(name = "password_retry_counter")
-        private int passwordRetry ;
     }
 
 

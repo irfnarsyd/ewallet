@@ -55,6 +55,8 @@ public class TransactionController {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "user is banned");
             } else if (usersService.findByUsername(createTransactionDTO.getDestinationUsername()) == null) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "destination user not found");
+            } else if (usersService.findByUsername(createTransactionDTO.getUsername()) == usersService.findByUsername(createTransactionDTO.getDestinationUsername())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "destination user cannot be the same as the origin user");
             } else if (usersService.getPasswordCounter(createTransactionDTO.getUsername(), createTransactionDTO.getPassword())) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "password invalid");
             } else if (createTransactionDTO.getAmount() > usersService.getTransactionLimit(createTransactionDTO.getUsername())) {

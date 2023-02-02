@@ -26,7 +26,7 @@ public class UsersController {
         } else {
             if (service.findByUsername(userRegistrationDTO.getUsername()) != null) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "username is taken");
-            } else if (service.validatePassword(userRegistrationDTO.getPassword())) {
+            } else if (!service.validatePassword(userRegistrationDTO.getPassword())) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "password format invalid");
             }
         }
@@ -54,6 +54,8 @@ public class UsersController {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "user not found");
             } else if (service.findByKtp(userUpdateKtpDTO.getKtp()) != null) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ktp has been used by other user");
+            } else if (!service.validateKtpSize(userUpdateKtpDTO.getKtp())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ktp must have 16 digit");
             }
         }
             service.updateKtp(username, userUpdateKtpDTO);
@@ -85,10 +87,8 @@ public class UsersController {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Your old password is incorrect");
                 } else if (service.getPassword(userChangePasswordDTO.getUsername(), userChangePasswordDTO.getNewPassword())) {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Your new password is still the same as old password");
-                } else {
-                    if (service.validatePassword(userChangePasswordDTO.getNewPassword())) {
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "new password format invalid");
-                    }
+                } else if (!service.validatePassword(userChangePasswordDTO.getNewPassword())) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "new password format invalid");
                 }
             }
         }
